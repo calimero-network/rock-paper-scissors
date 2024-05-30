@@ -10,34 +10,33 @@
   </wallet-ctx-provider-vue>
 </template>
 <script>
-import { applyPureReactInVue } from "veaury";
+import { applyPureReactInVue } from 'veaury'
 // This is a React component
-import { WalletSelectorContextProvider } from "@calimero-is-near/calimero-p2p-sdk/lib/wallet/NearLogin/WalletSelectorContext";
-import NearLogin from "@calimero-is-near/calimero-p2p-sdk/lib/wallet/NearLogin/NearLogin";
+import { WalletSelectorContextProvider } from '@calimero-is-near/calimero-p2p-sdk/lib/wallet/NearLogin/WalletSelectorContext'
+import NearLogin from '@calimero-is-near/calimero-p2p-sdk/lib/wallet/NearLogin/NearLogin'
 
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter } from 'vue-router'
 
 export default {
   components: {
     // Use HOC 'applyReactInVue' or 'applyPureReactInVue'
     WalletCtxProviderVue: applyPureReactInVue(WalletSelectorContextProvider),
-    NearLoginVue: applyPureReactInVue(NearLogin),
+    NearLoginVue: applyPureReactInVue(NearLogin)
   },
   setup() {
-    const router = useRouter();
+    const router = useRouter()
     function success() {
-      router.push("/");
+      router.push('/')
     }
 
     function auth() {
-      router.push("/login");
+      router.push('/')
     }
 
     return {
       success,
-      auth,
-    };
-  },
-};
+      auth
+    }
+  }
+}
 </script>

@@ -6,11 +6,7 @@ export interface ClientKey {
 }
 
 export const isAuthenticated = () => {
-  if (!LocalStorage.hasItem('node-authorized')) {
-    return false
-  }
-
-  return LocalStorage.getItem('node-authorized')
+  return LocalStorage.hasItem('client-key')
 }
 
 export const getClientKey = (): ClientKey | null => {
