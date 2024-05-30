@@ -79,7 +79,7 @@ import { ref } from 'vue'
 import { Game } from '../game'
 import GameEventListener from '../ws'
 
-const nodeUrl = ref('http://localhost:2529')
+const nodeUrl = ref('http://localhost:2428')
 const applicationId = ref('4a69641790ae9b710c29ee99edb2c8560812e7752bb392cdf001ee0002fa4647')
 const gameVersion = ref('Not Connected')
 const choice = ref('Rock')
