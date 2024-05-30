@@ -1,9 +1,13 @@
+<script setup>
+import NearLogin from "./components/NearLogin.vue";
+</script>
+
 <template>
-  <router-view />
+  <q-layout view="lHh Lpr lFf">
+    <q-page-container>
+      <router-view />
+    </q-page-container>
+  </q-layout>
 </template>
 
-<script setup>
-defineOptions({
-  name: 'App'
-});
-</script>
+<style scoped></style>

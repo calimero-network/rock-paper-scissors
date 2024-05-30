@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { nearApi } from "boot/axios";
+import { nearApi } from "../axios";
 import { useQuasar } from "quasar";
 import { ref, onBeforeUnmount, onBeforeMount } from "vue";
 
