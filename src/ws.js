@@ -4,7 +4,7 @@
 export default class GameEventListener {
   constructor(nodeUrl, applicationId) {
     this.ws = new WebSocket(`${nodeUrl}/ws`);
-    this.ws.addEventListener("open", (event) => {
+    this.ws.addEventListener("open", () => {
       console.log('here')
       const request = {
         id: this.getRandomRequestId(),
@@ -18,8 +18,6 @@ export default class GameEventListener {
 
     this.events = {};
     this.ws.addEventListener("message", (event) => {
-      console.log('parse')
-      console.log(event)
       this.parseMessage(event.data)
     });
   }
@@ -30,14 +28,15 @@ export default class GameEventListener {
 
   parseMessage(msg) {
     const event = JSON.parse(msg);
-    event.result.data.events.forEach(e => {
-      console.log(e)
-      if (e.kind in this.events) {
-        let bytes = new Int8Array(e.data);
-        let str = new TextDecoder().decode(bytes);
-        this.events[e.kind](JSON.parse(str))
-      }
-    })
+    if (event.result.data.events) {
+      event.result.data.events.forEach(e => {
+        if (e.kind in this.events) {
+          let bytes = new Int8Array(e.data);
+          let str = new TextDecoder().decode(bytes);
+          this.events[e.kind](JSON.parse(str))
+        }
+      })
+    }
   }
 
   getRandomRequestId() {

@@ -1,23 +1,15 @@
 <template>
-  <div class="col column">
+  <div class="col column q-pa-sm">
     <q-input
       dense
       outlined
       label="Application ID"
       v-model="applicationId"
-      class="q-mr-xs"
+      class="q-mr-xs bg-white"
     />
     <div class="row q-pa-sm">
-      <q-input
-        dense
-        outlined
-        label="Node URL"
-        v-model="nodeUrl"
-        class="col q-mr-xs"
-      />
-      <q-btn color="primary" flat no-caps class="q-mr-xs" @click="connectToNode"
-        >Connect</q-btn
-      >
+      <q-input dense outlined label="Node URL" v-model="nodeUrl" class="col q-mr-xs bg-white" />
+      <q-btn color="primary" flat no-caps class="q-mr-xs" @click="connectToNode">Connect</q-btn>
     </div>
     <q-separator />
     <div class="q-ml-md row items-center justify-center">
@@ -25,20 +17,9 @@
       <div class="col text-grey-10 text-bold">{{ gameVersion }}</div>
     </div>
     <div class="row q-pa-sm">
-      <q-input
-        dense
-        outlined
-        label="Your name"
-        class="col q-mr-xs"
-        v-model="playerName"
-      />
-      <q-btn
-        color="primary"
-        :disable="game === null"
-        no-caps
-        class="q-mr-xs"
-        @click="join"
-        >Join the game</q-btn
+      <q-input dense outlined label="Your name" class="col q-mr-xs" v-model="playerName" />
+      <q-btn color="primary" :disable="game === null" no-caps class="q-mr-xs" @click="join"
+        >Join</q-btn
       >
       <q-btn no-caps color="negative" @click="reset">Reset</q-btn>
     </div>
@@ -77,24 +58,16 @@
         :options="[
           { label: '✊', value: 'Rock' },
           { label: '✋', value: 'Paper' },
-          { label: '✌', value: 'Scissors' },
+          { label: '✌', value: 'Scissors' }
         ]"
       />
       <q-space />
       <q-btn no-caps dense color="secondary" @click="submit">Commit</q-btn>
-      <q-btn
-        no-caps
-        dense
-        color="secondary"
-        @click="reveal"
-        :disable="!opponentCommited"
+      <q-btn no-caps dense color="secondary" @click="reveal" :disable="!opponentCommited"
         >Reveal</q-btn
       >
     </div>
-    <div
-      v-if="winnerIdx !== null"
-      class="justify-center q-mt-md row text-bold text-h6 text-grey-8"
-    >
+    <div v-if="winnerIdx !== null" class="justify-center q-mt-md row text-bold text-h6 text-grey-8">
       <span v-if="winnerIdx === playerId"> You won the game 🎉🎊</span>
       <span v-else> You lost the game 🥲 </span>
     </div>
@@ -102,84 +75,82 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { Game } from "src/game";
-import GameEventListener from "src/ws";
+import { ref } from 'vue'
+import { Game } from '../game'
+import GameEventListener from '../ws'
 
-const nodeUrl = ref("http://localhost:2529");
-const applicationId = ref(
-  "4a69641790ae9b710c29ee99edb2c8560812e7752bb392cdf001ee0002fa4647"
-);
-const gameVersion = ref("Not Connected");
-const choice = ref("Rock");
-const playerName = ref("");
-let game = null;
-const playerId = ref(null);
-let ws = null;
-const opponentCommited = ref(false);
-const opponentRevealed = ref(false);
-const players = ref({});
-const winnerIdx = ref(null);
+const nodeUrl = ref('http://localhost:2529')
+const applicationId = ref('4a69641790ae9b710c29ee99edb2c8560812e7752bb392cdf001ee0002fa4647')
+const gameVersion = ref('Not Connected')
+const choice = ref('Rock')
+const playerName = ref('')
+let game = null
+const playerId = ref(null)
+let ws = null
+const opponentCommited = ref(false)
+const opponentRevealed = ref(false)
+const players = ref({})
+const winnerIdx = ref(null)
 
 const connectToNode = async () => {
-  game = new Game(nodeUrl.value, applicationId.value);
-  ws = new GameEventListener(nodeUrl.value, applicationId.value);
-  ws.on("NewPlayer", (player) => {
-    console.log(player.id, playerId.value);
-    players.value[player.id] = player.name;
-    console.log(players);
-  });
+  game = new Game(nodeUrl.value, applicationId.value)
+  ws = new GameEventListener(nodeUrl.value, applicationId.value)
+  ws.on('NewPlayer', (player) => {
+    console.log(player.id, playerId.value)
+    players.value[player.id] = player.name
+    console.log(players)
+  })
 
-  ws.on("PlayerCommited", (player) => {
+  ws.on('PlayerCommited', (player) => {
     if (player.id !== playerId.value) {
-      opponentCommited.value = true;
+      opponentCommited.value = true
     }
-  });
+  })
 
-  ws.on("PlayerRevealed", (player) => {
+  ws.on('PlayerRevealed', (player) => {
     if (player.id !== playerId.value) {
-      opponentRevealed.value = true;
+      opponentRevealed.value = true
     }
-  });
+  })
 
-  ws.on("GameOver", (winner) => (winnerIdx.value = winner.winner));
+  ws.on('GameOver', (winner) => (winnerIdx.value = winner.winner))
 
-  gameVersion.value = await game.getVersion();
-};
+  gameVersion.value = await game.getVersion()
+}
 
 const join = async () => {
   try {
-    playerId.value = Number.parseInt(await game.join(playerName.value));
+    playerId.value = Number.parseInt(await game.join(playerName.value))
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
-};
+}
 
 const submit = async () => {
   try {
-    console.log(await game.submit(choice.value));
+    console.log(await game.submit(choice.value))
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
-};
+}
 
 const reset = async () => {
   try {
-    await game.resetState();
-    opponentCommited.value = false;
-    players.value = {};
-    opponentRevealed.value = false;
-    winnerIdx.value = null;
+    await game.resetState()
+    opponentCommited.value = false
+    players.value = {}
+    opponentRevealed.value = false
+    winnerIdx.value = null
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
-};
+}
 
 const reveal = async () => {
   try {
-    await game.reveal();
+    await game.reveal()
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 </script>
