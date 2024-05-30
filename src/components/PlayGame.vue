@@ -17,7 +17,7 @@
       <div class="col text-grey-10 text-bold">{{ gameVersion }}</div>
     </div>
     <div class="row q-pa-sm">
-      <q-input dense outlined label="Your name" class="col q-mr-xs" v-model="playerName" />
+      <q-input dense outlined label="Your name" class="col bg-white q-mr-xs" v-model="playerName" />
       <q-btn color="primary" :disable="game === null" no-caps class="q-mr-xs" @click="join"
         >Join</q-btn
       >
