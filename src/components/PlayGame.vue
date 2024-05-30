@@ -136,7 +136,7 @@ const submit = async () => {
 
 const reset = async () => {
   try {
-    await game.reset() // To clear contract's state
+    await game.hardReset() // To clear contract's state
   } catch (error) {
     console.error(error)
   }

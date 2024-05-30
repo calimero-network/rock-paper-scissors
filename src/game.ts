@@ -11,7 +11,7 @@ interface VersionRequest {
 }
 
 interface CreateKeyPairRequest {
-  seed: Uint8Array
+  seed: number[]
 }
 
 interface KeyComponents {
@@ -22,7 +22,7 @@ interface KeyComponents {
 interface PrepareRequest {
   signing_key: string
   choice: string
-  nonce: Uint8Array
+  nonce: number[]
 }
 
 interface JoinRequest {
@@ -60,6 +60,9 @@ export class Game {
     if (authHeaders === null) {
       throw new Error('Failed to getVersion')
     }
+    console.log('*****************************')
+    console.log(authHeaders)
+    console.log('*****************************')
     const config: RequestConfig = {
       headers: authHeaders,
       timeout: 10000
@@ -116,12 +119,13 @@ export class Game {
 
   async join(playerName: string): Promise<number | undefined> {
     const params: CreateKeyPairRequest = {
-      seed: this.seed
+      seed: Array.from(this.seed)
     }
     const keysResponse = await this.query<CreateKeyPairRequest, KeyComponents>(
       'create_keypair',
       params
     )
+
     const keys = keysResponse.result?.output
     this.keys = keys
 
@@ -139,7 +143,7 @@ export class Game {
     const params: PrepareRequest = {
       signing_key: this.keys!.sk,
       choice,
-      nonce: this.nonce
+      nonce: Array.from(this.nonce)
     }
     const prepareResponse = await this.query<PrepareRequest, [string, string]>('prepare', params)
 
@@ -157,6 +161,10 @@ export class Game {
       player_idx: this.playerIdx,
       nonce: this.nonce
     })
+  }
+
+  async hardReset() {
+    await this.mutate('reset_state', {})
   }
 
   applicationId: string
