@@ -1,9 +1,7 @@
-<script setup>
-import NearLogin from "./components/NearLogin.vue";
-</script>
+<script setup></script>
 
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout>
     <q-page-container>
       <router-view />
     </q-page-container>
