@@ -1,4 +1,6 @@
-<script setup></script>
+<script setup>
+console.log(import.meta.env.BASE_URL)
+</script>
 
 <template>
   <q-layout>
