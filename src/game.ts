@@ -11,7 +11,7 @@ interface VersionRequest {
 }
 
 interface CreateKeyPairRequest {
-  seed: number[]
+  seed: Uint8Array
 }
 
 interface KeyComponents {
@@ -22,7 +22,7 @@ interface KeyComponents {
 interface PrepareRequest {
   signing_key: string
   choice: string
-  nonce: number[]
+  nonce: Uint8Array
 }
 
 interface JoinRequest {
@@ -36,11 +36,19 @@ interface CommitRequest {
   signature: string
 }
 
+interface ResetRequest {
+  player_idx: number
+  commitment: string
+  signature: string
+}
+
 export class Game {
   constructor(nodeUrl: string, applicationId: string) {
     this.applicationId = applicationId
-    this.seed = [...Array(32)].map(() => ~~(Math.random() * 255))
-    this.nonce = [...Array(32)].map(() => ~~(Math.random() * 255))
+    this.seed = new Uint8Array(32)
+    crypto.getRandomValues(this.seed)
+    this.nonce = new Uint8Array(32)
+    crypto.getRandomValues(this.nonce)
     this.jsonRpcClient = new JsonRpcClient(nodeUrl, '/jsonrpc')
   }
 
@@ -94,8 +102,16 @@ export class Game {
     return response.result?.output
   }
 
-  async resetState() {
-    await this.mutate('reset_state', {})
+  async reset() {
+    if (!(this.playerIdx && this.commitment && this.signature)) {
+      throw new Error('Unable to call reset.')
+    }
+
+    await this.mutate<ResetRequest, {}>('reset', {
+      player_idx: this.playerIdx,
+      commitment: this.commitment,
+      signature: this.signature
+    })
   }
 
   async join(playerName: string): Promise<number | undefined> {
@@ -114,9 +130,6 @@ export class Game {
       public_key: keys!.pk
     }
     const joinResponse = await this.mutate<JoinRequest, number>('join', joinParams)
-    console.log('**************************')
-    console.log(joinResponse)
-    console.log('**************************')
 
     this.playerIdx = joinResponse.result?.output
     return this.playerIdx
@@ -132,26 +145,23 @@ export class Game {
 
     this.commitment = prepareResponse.result?.output![0]
     this.signature = prepareResponse.result?.output![1]
-    const commitResponse = await this.mutate<CommitRequest, {}>('commit', {
+    await this.mutate<CommitRequest, {}>('commit', {
       player_idx: this.playerIdx!,
       commitment: this.commitment!,
       signature: this.signature!
     })
-
-    console.log(commitResponse)
   }
 
   async reveal() {
-    const revealResponse = await this.mutate('reveal', {
+    await this.mutate('reveal', {
       player_idx: this.playerIdx,
       nonce: this.nonce
     })
-    console.log(revealResponse)
   }
 
   applicationId: string
-  seed: number[]
-  nonce: number[]
+  seed: Uint8Array
+  nonce: Uint8Array
   jsonRpcClient: JsonRpcClient
   keys: KeyComponents | undefined
   commitment: string | undefined

@@ -136,14 +136,16 @@ const submit = async () => {
 
 const reset = async () => {
   try {
-    await game.resetState()
-    opponentCommited.value = false
-    players.value = {}
-    opponentRevealed.value = false
-    winnerIdx.value = null
+    await game.reset() // To clear contract's state
   } catch (error) {
     console.error(error)
   }
+
+  game = new Game(nodeUrl.value, applicationId.value)
+  opponentCommited.value = false
+  players.value = {}
+  opponentRevealed.value = false
+  winnerIdx.value = null
 }
 
 const reveal = async () => {
