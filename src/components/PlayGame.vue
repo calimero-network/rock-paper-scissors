@@ -7,9 +7,20 @@
       v-model="applicationId"
       class="q-mr-xs bg-white"
     />
-    <div class="row q-pa-sm">
+    <div class="row q-mt-sm">
       <q-input dense outlined label="Node URL" v-model="nodeUrl" class="col q-mr-xs bg-white" />
-      <q-btn color="primary" flat no-caps class="q-mr-xs" @click="connectToNode">Connect</q-btn>
+      <q-btn
+        v-if="isAuthenticated()"
+        color="primary"
+        flat
+        no-caps
+        class="q-mr-xs"
+        @click="connectToNode"
+        >Connect</q-btn
+      >
+      <q-btn v-else color="orange" no-caps class="q-mr-xs" @click="navigateToLoginPage"
+        >Login</q-btn
+      >
     </div>
     <q-separator />
     <div class="q-ml-md row items-center justify-center">
@@ -78,6 +89,8 @@
 import { ref } from 'vue'
 import { Game } from '../game'
 import GameEventListener from '../ws'
+import { isAuthenticated } from '../auth'
+import { useRouter } from 'vue-router'
 
 const nodeUrl = ref('http://localhost:2428')
 const applicationId = ref('4a69641790ae9b710c29ee99edb2c8560812e7752bb392cdf001ee0002fa4647')
@@ -91,6 +104,7 @@ const opponentCommited = ref(false)
 const opponentRevealed = ref(false)
 const players = ref({})
 const winnerIdx = ref(null)
+const router = useRouter()
 
 const connectToNode = async () => {
   game = new Game(nodeUrl.value, applicationId.value)
@@ -154,5 +168,9 @@ const reveal = async () => {
   } catch (error) {
     console.log(error)
   }
+}
+
+const navigateToLoginPage = () => {
+  router.push({ name: 'login', query: { appId: applicationId.value, rpcUrl: nodeUrl.value } })
 }
 </script>

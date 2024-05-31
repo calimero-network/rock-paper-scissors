@@ -1,8 +1,8 @@
 <template>
   <wallet-ctx-provider-vue network="testnet">
     <near-login-vue
-      appId="4a69641790ae9b710c29ee99edb2c8560812e7752bb392cdf001ee0002fa4647"
-      rpcBaseUrl="http://localhost:2528"
+      :appId="appId"
+      :rpcBaseUrl="rpcBaseUrl"
       :successRedirect="success"
       :navigateBack="auth"
     >
@@ -22,6 +22,16 @@ export default {
     // Use HOC 'applyReactInVue' or 'applyPureReactInVue'
     WalletCtxProviderVue: applyPureReactInVue(WalletSelectorContextProvider),
     NearLoginVue: applyPureReactInVue(NearLogin)
+  },
+  props: {
+    appId: {
+      type: String,
+      required: true
+    },
+    rpcBaseUrl: {
+      type: String,
+      required: true
+    }
   },
   setup() {
     const router = useRouter()
