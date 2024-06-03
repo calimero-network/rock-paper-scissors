@@ -32,7 +32,7 @@
       <q-btn color="primary" :disable="game === null" no-caps class="q-mr-xs" @click="join"
         >Join</q-btn
       >
-      <q-btn no-caps color="negative" @click="reset">Reset</q-btn>
+      <q-btn no-caps color="negative" @click="hardReset">Reset</q-btn>
     </div>
     <div class="q-ml-md row items-center justify-center">
       <div class="text-grey-8 q-mr-sm">Player ID:</div>
@@ -73,10 +73,8 @@
         ]"
       />
       <q-space />
-      <q-btn no-caps dense color="secondary" @click="submit">Commit</q-btn>
-      <q-btn no-caps dense color="secondary" @click="reveal" :disable="!opponentCommited"
-        >Reveal</q-btn
-      >
+      <q-btn no-caps dense color="secondary" @click="commit">Commit</q-btn>
+      <q-btn no-caps dense color="warning" @click="reset" :disable="!iCommitted">Reset</q-btn>
     </div>
     <div v-if="winnerIdx !== null" class="justify-center q-mt-md row text-bold text-h6 text-grey-8">
       <span v-if="winnerIdx === playerId"> You won the game 🎉🎊</span>
@@ -85,7 +83,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue'
 import { Game } from '../game'
 import GameEventListener from '../ws'
@@ -102,6 +100,8 @@ const playerId = ref(null)
 let ws = null
 const opponentCommited = ref(false)
 const opponentRevealed = ref(false)
+const iCommitted = ref(false)
+const iRevealed = ref(false)
 const players = ref({})
 const winnerIdx = ref(null)
 const router = useRouter()
@@ -125,6 +125,9 @@ const connectToNode = async () => {
     if (player.id !== playerId.value) {
       opponentRevealed.value = true
     }
+    if (iCommitted.value && opponentCommited.value && !iRevealed.value) {
+      reveal().then(() => (iRevealed.value = true))
+    }
   })
 
   ws.on('GameOver', (winner) => (winnerIdx.value = winner.winner))
@@ -140,15 +143,34 @@ const join = async () => {
   }
 }
 
-const submit = async () => {
+const commit = async () => {
   try {
     console.log(await game.submit(choice.value))
+    iCommitted.value = true
+    if (iCommitted.value && opponentCommited.value && !iRevealed.value) {
+      await reveal()
+    }
   } catch (error) {
     console.error(error)
   }
 }
 
 const reset = async () => {
+  try {
+    await game.reset()
+  } catch (error) {
+    console.error(error)
+  }
+
+  game = new Game(nodeUrl.value, applicationId.value)
+  opponentCommited.value = false
+  iCommitted.value = false
+  players.value = {}
+  opponentRevealed.value = false
+  winnerIdx.value = null
+}
+
+const hardReset = async () => {
   try {
     await game.hardReset() // To clear contract's state
   } catch (error) {
@@ -157,9 +179,11 @@ const reset = async () => {
 
   game = new Game(nodeUrl.value, applicationId.value)
   opponentCommited.value = false
+  iCommitted.value = false
   players.value = {}
   opponentRevealed.value = false
   winnerIdx.value = null
+  iRevealed.value = false
 }
 
 const reveal = async () => {
