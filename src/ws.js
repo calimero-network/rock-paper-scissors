@@ -28,8 +28,9 @@ export default class GameEventListener {
 
   parseMessage(msg) {
     const event = JSON.parse(msg);
-    if (event.result.data.events) {
-      event.result.data.events.forEach(e => {
+    const events = event.result.data?.events;
+    if (events) {
+      events.forEach(e => {
         if (e.kind in this.events) {
           let bytes = new Int8Array(e.data);
           let str = new TextDecoder().decode(bytes);

@@ -159,7 +159,7 @@ export class Game {
   async reveal() {
     await this.mutate('reveal', {
       player_idx: this.playerIdx,
-      nonce: this.nonce
+      nonce: Array.from(this.nonce)
     })
   }
 
