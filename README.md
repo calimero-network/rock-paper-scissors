@@ -15,7 +15,7 @@ The project is structured into two main parts:
 Follow these steps to get the project up and running:
 
 ### Running local nodes
-You need to run Calimero nodes on your machine to get started. Follow the [Getting started](https://calimero-network.github.io/explore/developers-quickstart/getting-started) documentation.
+You need to run Calimero nodes on your machine to get started. Follow the [Getting started](https://calimero-network.github.io/getting-started/setup) documentation.
 
 ### Building the Contract
 
