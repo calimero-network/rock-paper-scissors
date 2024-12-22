@@ -1,9 +1,9 @@
 use std::cmp::Ordering;
 
+use crate::commitment::Commitment;
+use crate::commitment::Nonce;
 use calimero_sdk::borsh::{BorshDeserialize, BorshSerialize};
 use calimero_sdk::serde::{Deserialize, Serialize};
-
-use crate::commit::{Commitment, Nonce};
 
 #[derive(
     Eq, Copy, Clone, Debug, PartialEq, Serialize, Deserialize, BorshSerialize, BorshDeserialize,

@@ -8,14 +8,16 @@ use rand_chacha::rand_core::SeedableRng;
 use rand_chacha::ChaCha20Rng;
 
 mod choice;
-mod commit;
+mod commitment;
 mod errors;
 mod key;
 mod player_idx;
 mod repr;
 
+use crate::commitment::Commitment;
+use crate::commitment::Nonce;
+
 use choice::Choice;
-use commit::{Commitment, Nonce};
 use errors::{CommitError, JoinError, ResetError, RevealError};
 use key::KeyComponents;
 use player_idx::PlayerIdx;
@@ -57,6 +59,11 @@ pub type Seed = [u8; 32];
 
 #[app::logic]
 impl Game {
+    #[app::init]
+    pub fn init() -> Game {
+        Game::default()
+    }
+
     pub fn create_keypair(seed: Seed) -> KeyComponents {
         let mut csprng = ChaCha20Rng::from_seed(seed);
 
@@ -133,7 +140,7 @@ impl Game {
         (b.as_mut(), a.as_mut())
     }
 
-    pub fn commit(
+    pub fn commit_result(
         &mut self,
         player_idx: PlayerIdx,
         commitment: Repr<Commitment>,
