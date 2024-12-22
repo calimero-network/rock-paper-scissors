@@ -1,8 +1,8 @@
 use calimero_sdk::serde::{Deserialize, Serialize};
 use ed25519_dalek::{Signature, SigningKey, VerifyingKey};
 
-use crate::commit::Commitment;
 use crate::repr::{Repr, ReprBytes};
+use crate::Commitment;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(crate = "calimero_sdk::serde")]

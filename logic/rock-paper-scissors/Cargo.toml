@@ -1,17 +1,24 @@
 [package]
 name = "rock-paper-scissors"
 version = "0.1.0"
-authors.workspace = true
-edition.workspace = true
-repository.workspace = true
-license.workspace = true
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-bs58.workspace = true
-calimero-sdk = { git = "ssh://git@github.com/calimero-network/core.git", branch = "master" }
-ed25519-dalek = { workspace = true, features = ["rand_core"] }
-rand_chacha.workspace = true
-sha3.workspace = true
+bs58 = "0.5.0"
+calimero-sdk = { git = "https://github.com/calimero-network/core", branch = "master" }
+calimero-storage = { git = "https://github.com/calimero-network/core", branch = "master" }
+ed25519-dalek = {version = "2.1.1",features = ["rand_core"]}
+rand_chacha = "0.3.1"
+sha3 = "0.10.8"
+
+[profile.app-release]
+inherits = "release"
+codegen-units = 1
+opt-level = "z"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true
